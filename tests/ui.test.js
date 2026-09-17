@@ -10,7 +10,8 @@ function hslToRgb(h, s, l) {
   const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
   return [f(0), f(8), f(4)].map((x) => x * 255);
 }
-function contrast(hsl, bg = [13, 17, 24]) {
+// Permukaan kartu tema luxury: hitam hangat #13110d.
+function contrast(hsl, bg = [19, 17, 13]) {
   const [h, s, l] = hsl.match(/[\d.]+/g).map(Number);
   const lum = (rgb) => {
     const [r, g, b] = rgb.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
@@ -42,17 +43,17 @@ test('scoreColor selalu lolos kontras AA di permukaan gelap untuk semua skor', (
     assert.ok(contrast(c) >= 4.5, `skor ${s} → ${c} kontras ${contrast(c).toFixed(2)}`);
   }
   assert.ok(contrast(U.scoreColor(NaN)) >= 4.5);
-  assert.match(U.scoreColor(80), /^hsl\(146/);
-  assert.match(U.scoreColor(-80), /^hsl\(2/);
+  assert.match(U.scoreColor(80), /^hsl\(158/);
+  assert.match(U.scoreColor(-80), /^hsl\(350/);
   assert.equal(U.scoreColor(5), U.scoreColor(-5), 'skor lemah netral, bukan cokelat');
 });
 
 test('scoreFill: intensitas mengikuti kekuatan skor', () => {
   const alpha = (s) => Number(s.match(/([\d.]+)\)$/)[1]);
   assert.ok(alpha(U.scoreFill(90)) > alpha(U.scoreFill(30)));
-  assert.match(U.scoreFill(60), /34, 197, 94/);
-  assert.match(U.scoreFill(-60), /239, 68, 68/);
-  assert.match(U.scoreFill(3), /148, 163, 184/);
+  assert.match(U.scoreFill(60), /16, 185, 129/);
+  assert.match(U.scoreFill(-60), /225, 29, 72/);
+  assert.match(U.scoreFill(3), /212, 175, 55/);
   assert.match(U.scoreFill(NaN), /0\.08/);
 });
 
@@ -154,8 +155,8 @@ test('diffVerdicts mencatat perubahan arah, bukan perubahan kekuatan', () => {
 });
 
 test('faviconSvg & statusLevel', () => {
-  assert.match(U.faviconSvg('sbull'), /#22c55e/);
-  assert.match(U.faviconSvg('tidak-ada'), /#f5c451/);
+  assert.match(U.faviconSvg('sbull'), /#10b981/);
+  assert.match(U.faviconSvg('tidak-ada'), /fill="#d4af37"/);
   assert.equal(U.statusLevel(null, 0, 10), 'wait');
   assert.equal(U.statusLevel({ ok: false }, 0, 10), 'down');
   assert.equal(U.statusLevel({ ok: true, at: 0 }, 100, 10), 'stale');

@@ -6,6 +6,13 @@ teknikal & volume, korelasi DXY, yield, news high impact, dan sentimen.
 
 **Live:** https://xyb3rpunq.github.io/ai-gold/
 
+## Dua tampilan
+
+- **Pemula** (bawaan): kondisi emas dalam bahasa awam — *condong naik / condong turun / belum jelas* — untuk gaya
+  scalping, intraday, swing, atau jangka panjang, lengkap dengan checklist alasan (arah timeframe, AI, dolar AS,
+  obligasi AS, berita, sesi), level penting, aturan aman, dan kamus istilah. Bagian Pro tidak dirender, jadi lebih ringan.
+- **Pro**: dashboard lengkap — gauge, 15 timeframe, otak AI, 60+ sinyal, matriks, DXY, sentimen, headline.
+
 ## Dua mode harga
 
 | Mode | Cara buka | Harga & candle |
@@ -52,7 +59,7 @@ EMA200 & PSAR selisih ≤ 0,03% (panjang riwayat berbeda); Stochastic dibandingk
 ## Menjalankan
 
 ```bash
-npm test                 # 122 tes, nol dependensi (node:test)
+npm test                 # 138 tes, nol dependensi (node:test)
 node scripts/smoke.mjs   # data sungguhan: semua TF + pelatihan AI
 start-ai-gold.bat        # mode broker realtime di http://localhost:8787
 ```

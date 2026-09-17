@@ -6,6 +6,7 @@ import { CONTEXT_WEIGHTS } from './score.js';
 import { currencyUsdSign, surpriseVote } from './macro.js';
 import { formatValue } from './news.js';
 import * as U from './ui.js';
+import * as X from './explain.js';
 
 const $ = (id) => document.getElementById(id);
 const fin = Number.isFinite;
@@ -36,7 +37,12 @@ function save(key, value) {
   try { localStorage.setItem(`aigold.${key}`, JSON.stringify(value)); } catch { /* penyimpanan diblokir */ }
 }
 
+// Mode Pemula menampilkan chart yang bersih: tren (SMA 50) dan batas atas/bawah saja.
+const SIMPLE_OVERLAYS = { sma50: true, sr: true };
+
 const state = {
+  mode: load('mode', 'simple') === 'pro' ? 'pro' : 'simple',
+  style: X.STYLES.some((st) => st.id === load('style', 'intraday')) ? load('style', 'intraday') : 'intraday',
   snap: null,
   selected: readSelected(),
   broker: load('broker', 'PEPPERSTONE'),
@@ -117,11 +123,16 @@ function select(tf, { focus = false } = {}) {
     post({ type: 'select', tf });
   }
   if (state.snap) {
-    renderTiles(state.snap);
     renderTfTabs(state.snap);
-    renderSelected(state.snap);
-    renderAiTable(state.snap);
-    renderMatrix(state.snap);
+    if (state.mode === 'pro') {
+      renderTiles(state.snap);
+      renderSelected(state.snap);
+      renderAiTable(state.snap);
+      renderMatrix(state.snap);
+    } else {
+      setText($('chart-title'), `${state.selected} · ${state.snap.brokerSymbol || ''}`);
+      queueDraw();
+    }
   }
   if (focus) $(`tile-${tf}`)?.focus();
 }
@@ -136,6 +147,46 @@ function setBroker(broker) {
   renderBrokerSeg();
 }
 
+function applyMode(mode) {
+  state.mode = mode === 'pro' ? 'pro' : 'simple';
+  save('mode', state.mode);
+  document.body.classList.toggle('mode-simple', state.mode === 'simple');
+  document.body.classList.toggle('mode-pro', state.mode === 'pro');
+  document.querySelectorAll('#mode-seg button').forEach((b) => {
+    const on = b.dataset.setMode === state.mode;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-checked', String(on));
+  });
+  const first = document.querySelector(`#sections-nav a[data-mode="${state.mode}"]`) || document.querySelector('#sections-nav a');
+  document.querySelectorAll('#sections-nav a').forEach((a) => a.classList.toggle('on', a === first));
+  state.hashes = {};
+  if (state.mode === 'simple') {
+    const style = X.STYLES.find((st) => st.id === state.style);
+    if (style) select(style.mainTf);
+  }
+  if (state.snap) onSnapshot(state.snap);
+  queueDraw();
+}
+
+function setStyle(styleId, { syncChart = true } = {}) {
+  const style = X.STYLES.find((st) => st.id === styleId);
+  if (!style) return;
+  state.style = style.id;
+  save('style', style.id);
+  document.querySelectorAll('#style-picker .style-btn').forEach((b) => {
+    const on = b.dataset.style === style.id;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-checked', String(on));
+  });
+  // Di Mode Pemula chart ikut timeframe utama gaya yang dipilih; pilihan TF di Mode Pro tidak diganggu.
+  if (syncChart) select(style.mainTf);
+  if (state.snap) renderPemula(state.snap);
+}
+
+function activeOverlays() {
+  return state.mode === 'simple' ? SIMPLE_OVERLAYS : state.overlays;
+}
+
 function renderBrokerSeg() {
   document.querySelectorAll('#broker-seg button').forEach((b) => {
     const on = b.dataset.broker === state.broker;
@@ -145,16 +196,26 @@ function renderBrokerSeg() {
 }
 
 // ---------------------------------------------------------------- tick
+// Kilatan warna singkat saat harga berubah, lalu kembali ke warna normal.
+function flash(el, up) {
+  if (!el) return;
+  el.classList.remove('flash-up', 'flash-down');
+  void el.offsetWidth;
+  el.classList.add(up ? 'flash-up' : 'flash-down');
+  clearTimeout(el._flashTimer);
+  el._flashTimer = setTimeout(() => el.classList.remove('flash-up', 'flash-down'), 700);
+}
+
 function onTick(msg) {
   if (!fin(msg.price)) return;
   const el = $('price-last');
   if (fin(state.lastPrice) && msg.price !== state.lastPrice) {
-    el.classList.remove('flash-up', 'flash-down');
-    void el.offsetWidth;
-    el.classList.add(msg.price > state.lastPrice ? 'flash-up' : 'flash-down');
+    flash(el, msg.price > state.lastPrice);
+    if (state.mode === 'simple') flash($('s-price'), msg.price > state.lastPrice);
   }
   state.lastPrice = msg.price;
   setText(el, U.fmt(msg.price, 2));
+  if (state.mode === 'simple') setText($('s-price'), U.fmt(msg.price, 2));
   if (fin(msg.bid) && fin(msg.ask)) {
     setText($('price-bid'), U.fmt(msg.bid, 2));
     setText($('price-ask'), U.fmt(msg.ask, 2));
@@ -179,7 +240,7 @@ function queueDraw() {
   requestAnimationFrame(() => {
     state.drawQueued = false;
     const sparkColor = state.ticks.length > 1 && state.ticks.at(-1) < state.ticks[0] ? 'var(--bear)' : 'var(--bull)';
-    const spark = $('tick-spark');
+    const spark = $(state.mode === 'simple' ? 's-spark' : 'tick-spark');
     spark.style.color = sparkColor;
     spark.innerHTML = U.sparklineSvg(state.ticks, { width: 300, height: 46, area: true, dot: true });
     drawChart();
@@ -193,18 +254,25 @@ function onSnapshot(snap) {
   renderPrice(snap);
   renderFeeds();
   if (!snap.summary) return;
-  renderVerdict(snap);
-  renderHorizons(snap);
   renderRisk(snap);
-  renderTiles(snap);
   renderTfTabs(snap);
-  renderSelected(snap);
-  renderAiTable(snap);
-  renderMatrix(snap);
-  renderIntermarket(snap);
-  renderCalendar(snap);
-  renderSentiment(snap);
-  renderHeadlines(snap);
+  if (state.mode === 'simple') {
+    // Mode Pemula: bagian Pro tersembunyi tidak dirender sama sekali (lebih ringan).
+    renderPemula(snap);
+    setText($('chart-title'), `${state.selected} · ${snap.brokerSymbol || ''}`);
+    queueDraw();
+  } else {
+    renderVerdict(snap);
+    renderHorizons(snap);
+    renderTiles(snap);
+    renderSelected(snap);
+    renderAiTable(snap);
+    renderMatrix(snap);
+    renderIntermarket(snap);
+    renderCalendar(snap);
+    renderSentiment(snap);
+    renderHeadlines(snap);
+  }
   trackChanges(snap);
   setText($('footer-perf'), `hitung ${snap.computeMs.toFixed(0)} ms · ${snap.aiModels} model AI · ${TIMEFRAMES.length} timeframe`);
 }
@@ -325,7 +393,71 @@ function renderRisk(snap) {
   const el = $('risk-banner');
   if (!r.active) { el.hidden = true; return; }
   el.hidden = false;
-  setHtml(el, `⚠️ <b>Zona news high impact</b> — ${r.events.map((e) => `${U.esc(e.currency)} ${U.esc(e.title)} (${U.wib(Date.parse(e.date))} WIB)`).join(', ')}. Keyakinan TF ≤1H dipotong 50%. Spread &amp; slippage biasanya melebar.`);
+  const list = r.events.map((e) => `${U.esc(e.currency)} ${U.esc(e.title)} (${U.wib(Date.parse(e.date))} WIB)`).join(', ');
+  setHtml(el, state.mode === 'simple'
+    ? `⚠️ <b>Berita besar sedang/akan rilis:</b> ${list}. Harga bisa melompat tiba-tiba dan biaya spread melebar — pemula sebaiknya menunggu sampai reda.`
+    : `⚠️ <b>Zona news high impact</b> — ${list}. Keyakinan TF ≤1H dipotong 50%. Spread &amp; slippage biasanya melebar.`);
+}
+
+// ---------------------------------------------------------------- Mode Pemula
+function dirColor(key) {
+  return key === 'up' ? 'var(--bull)' : key === 'down' ? 'var(--bear)' : 'var(--gold-2)';
+}
+
+function renderPemula(snap) {
+  const now = Date.now();
+  const q = snap.market.quotes?.[snap.brokerSymbol];
+  const bq = snap.market.brokerQuote;
+  setText($('s-symbol'), snap.brokerSymbol || 'XAU/USD');
+  if (!fin(state.lastPrice)) {
+    const p = fin(q?.lp) ? q.lp : bq?.ref;
+    if (fin(p)) setText($('s-price'), U.fmt(p, 2));
+  }
+  const chp = fin(q?.chp) ? q.chp : snap.market.scanner?.brokers?.[snap.broker]?.change;
+  const chg = $('s-chg');
+  if (fin(chp)) {
+    setText(chg, `${U.fmtPct(chp)} hari ini`);
+    chg.className = `price-chg ${chp >= 0 ? 'pos' : 'neg'}`;
+  }
+  const dr = snap.market.dayRange;
+  setText($('s-sub'), dr ? `Hari ini bergerak antara ${U.fmt(dr.lo)} dan ${U.fmt(dr.hi)} · dolar AS per troy ounce` : 'Dolar AS per troy ounce · diperbarui realtime');
+
+  const e = X.explainStyle(state.style, snap, now);
+  setText($('s-eyebrow'), `Kondisi untuk ${e.style.name.toLowerCase()} · ${e.style.hint}`);
+  const dirEl = $('s-dir');
+  setText(dirEl, e.dir.label);
+  dirEl.className = `lux-dir dir-${e.dir.key}`;
+  const bars = $('s-strength').querySelectorAll('i');
+  bars.forEach((b, i) => {
+    b.classList.toggle('on', i < e.strength.level);
+    b.style.setProperty('--c', dirColor(e.dir.key));
+  });
+  setText($('s-strength').querySelector('span'), `sinyal ${e.strength.label}`);
+  setText($('s-sentence'), e.sentence);
+
+  for (const st of X.STYLES) {
+    const hz = snap.summary.horizons.find((h) => h.id === st.id);
+    const d = X.directionWord(hz?.score);
+    const el = $(`sb-${st.id}`);
+    setText(el, d.key === 'wait' ? '● Belum jelas' : d.key === 'up' ? '▲ Condong naik' : '▼ Condong turun');
+    el.style.color = dirColor(d.key);
+  }
+
+  const icon = (ok) => (ok === true ? '<span class="check-ico ok" aria-label="mendukung">✓</span>' : ok === false ? '<span class="check-ico bad" aria-label="perhatian">!</span>' : '<span class="check-ico info" aria-label="info">i</span>');
+  setHtml($('s-checks'), e.checks.map((c) => `<li>${icon(c.ok)}<span>${U.esc(c.text)}</span></li>`).join(''));
+
+  const lv = e.levels;
+  setText($('s-level-tf'), lv ? `timeframe ${lv.tf}` : '–');
+  const price = fin(state.lastPrice) ? state.lastPrice : lv?.price;
+  setHtml($('s-ladder'), lv ? `
+    <div class="rung res"><span>Batas atas terdekat<small>resistance · harga sering tertahan</small></span><b>${U.fmt(lv.resistance)}</b></div>
+    <div class="rung now"><span>Harga sekarang<small>${fin(lv.resistance) && fin(price) ? `${U.fmt(lv.resistance - price)} ke atas` : ''}${fin(lv.support) && fin(price) ? ` · ${U.fmt(price - lv.support)} ke bawah` : ''}</small></span><b>${U.fmt(price)}</b></div>
+    <div class="rung sup"><span>Batas bawah terdekat<small>support · harga sering tertahan</small></span><b>${U.fmt(lv.support)}</b></div>` : '<div class="empty">Memuat level…</div>');
+  setText($('s-levels-note'), X.levelsSentence(lv));
+
+  const news = X.upcomingNews(snap.global.events, now, 3);
+  setHtml($('s-news'), news.length ? news.map((n) => `<li class="${n.inMs < 30 * 60_000 ? 'soon' : ''}"><div>${U.esc(n.currency)} · ${U.esc(n.title)}<small>${U.esc(n.when)}</small></div><span class="cd" data-countdown="${n.at}">${U.countdown(n.inMs)}</span></li>`).join('')
+    : '<li class="empty">Tidak ada berita besar terjadwal minggu ini.</li>');
 }
 
 // ---------------------------------------------------------------- timeframe tiles & tabs
@@ -730,7 +862,7 @@ function drawChart() {
     return;
   }
   const r = snap.results[state.selected];
-  const ov = state.overlays;
+  const ov = activeOverlays();
   const lines = chart.lines;
   const padR = 78;
   const padB = 24;
@@ -910,38 +1042,40 @@ function drawChart() {
     ${item('hma9', 'Hull9', '#22d3ee')}${item('hma21', 'Hull21', '#a78bfa')}${item('sma50', 'SMA50', '#fb923c')}${item('sma200', 'SMA200', '#f472b6')}${item('vwap', 'VWAP', '#60a5fa')}`);
 }
 
-// ---------------------------------------------------------------- latar jaringan saraf
-function neuralBackground() {
-  const canvas = $('bg-net');
-  if (!canvas || matchMedia('(prefers-reduced-motion: reduce)').matches || matchMedia('(max-width: 760px)').matches) return;
+// ---------------------------------------------------------------- latar debu emas
+// Partikel emas yang melayang pelan; tanpa garis antar-titik (O(n)), berhenti saat tab tidak terlihat.
+function goldDust() {
+  const canvas = $('bg-dust');
+  if (!canvas || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const ctx = canvas.getContext('2d');
-  let nodes = [];
+  let parts = [];
   const resize = () => {
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-    const count = Math.min(48, Math.round((innerWidth * innerHeight) / 36000));
-    nodes = Array.from({ length: count }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2 }));
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = innerWidth * dpr;
+    canvas.height = innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const count = Math.min(70, Math.round((innerWidth * innerHeight) / 22000));
+    parts = Array.from({ length: count }, () => ({
+      x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+      r: 0.4 + Math.random() * 1.6, vy: -(0.05 + Math.random() * 0.22), vx: (Math.random() - 0.5) * 0.08,
+      a: 0.15 + Math.random() * 0.5, tw: Math.random() * Math.PI * 2,
+    }));
   };
   resize();
   addEventListener('resize', resize);
   const frame = () => {
     if (document.hidden) { setTimeout(() => requestAnimationFrame(frame), 1000); return; }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const n of nodes) {
-      n.x += n.vx; n.y += n.vy;
-      if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
-      if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
-    }
-    for (let a = 0; a < nodes.length; a++) {
-      for (let b = a + 1; b < nodes.length; b++) {
-        const d = Math.hypot(nodes[a].x - nodes[b].x, nodes[a].y - nodes[b].y);
-        if (d < 150) {
-          ctx.strokeStyle = `rgba(167,139,250,${(1 - d / 150) * 0.22})`;
-          ctx.beginPath(); ctx.moveTo(nodes[a].x, nodes[a].y); ctx.lineTo(nodes[b].x, nodes[b].y); ctx.stroke();
-        }
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (const p of parts) {
+      p.x += p.vx; p.y += p.vy; p.tw += 0.03;
+      if (p.y < -4) { p.y = innerHeight + 4; p.x = Math.random() * innerWidth; }
+      const alpha = p.a * (0.6 + 0.4 * Math.sin(p.tw));
+      ctx.fillStyle = `rgba(243, 220, 138, ${alpha.toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+      if (p.r > 1.5) {
+        ctx.fillStyle = `rgba(212, 175, 55, ${(alpha * 0.25).toFixed(3)})`;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2); ctx.fill();
       }
-      ctx.fillStyle = 'rgba(245,196,81,.45)';
-      ctx.beginPath(); ctx.arc(nodes[a].x, nodes[a].y, 1.5, 0, Math.PI * 2); ctx.fill();
     }
     requestAnimationFrame(frame);
   };
@@ -985,6 +1119,13 @@ function bind() {
       if (groupSummary.parentElement.open) state.openCats.delete(cat); else state.openCats.add(cat);
       delete state.hashes.signals;
     }
+    const modeBtn = e.target.closest('[data-set-mode]');
+    if (modeBtn) {
+      applyMode(modeBtn.dataset.setMode);
+      if (modeBtn.classList.contains('btn-gold')) window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    const styleBtn = e.target.closest('#style-picker .style-btn');
+    if (styleBtn) setStyle(styleBtn.dataset.style);
     const br = e.target.closest('#broker-seg button');
     if (br) setBroker(br.dataset.broker);
     const panel = $('feeds-panel');
@@ -1054,9 +1195,11 @@ function bind() {
   setInterval(tick, 1000);
 }
 
+applyMode(state.mode);
+setStyle(state.style, { syncChart: state.mode === 'simple' });
 renderBrokerSeg();
 renderOverlayMenu();
 bind();
 scrollSpy();
-neuralBackground();
+goldDust();
 startData();

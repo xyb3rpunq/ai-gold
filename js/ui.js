@@ -30,22 +30,22 @@ export function pct(x, d = 1) {
 // Warna TEKS untuk skor -100..100 yang selalu lolos kontras AA (≥ 4.5:1) di permukaan gelap:
 // kekuatan skor menaikkan saturasi, bukan menggelapkan — jadi skor lemah tidak jadi cokelat kusam.
 export function scoreColor(score) {
-  if (!fin(score)) return 'hsl(220 12% 68%)';
+  if (!fin(score)) return 'hsl(40 14% 66%)';
   const s = Math.max(-100, Math.min(100, score)) / 100;
   const a = Math.abs(s);
-  if (a < 0.15) return 'hsl(220 12% 74%)';
-  if (s > 0) return `hsl(146 ${Math.round(45 + 40 * a)}% ${Math.round(66 - 10 * a)}%)`;
-  return `hsl(2 ${Math.round(55 + 35 * a)}% ${Math.round(72 - 8 * a)}%)`;
+  if (a < 0.15) return 'hsl(42 22% 74%)';
+  if (s > 0) return `hsl(158 ${Math.round(45 + 35 * a)}% ${Math.round(62 - 6 * a)}%)`;
+  return `hsl(350 ${Math.round(60 + 30 * a)}% ${Math.round(74 - 6 * a)}%)`;
 }
 
 // Warna LATAR/tint (rgba) untuk tile & batang: intensitas mengikuti kekuatan skor.
 export function scoreFill(score, maxAlpha = 0.34) {
-  if (!fin(score)) return 'rgba(148, 163, 184, 0.08)';
+  if (!fin(score)) return 'rgba(163, 151, 128, 0.08)';
   const s = Math.max(-100, Math.min(100, score)) / 100;
   const a = Math.abs(s);
   const alpha = (0.07 + (maxAlpha - 0.07) * a).toFixed(3);
-  if (a < 0.15) return `rgba(148, 163, 184, ${alpha})`;
-  return s > 0 ? `rgba(34, 197, 94, ${alpha})` : `rgba(239, 68, 68, ${alpha})`;
+  if (a < 0.15) return `rgba(212, 175, 55, ${alpha})`;
+  return s > 0 ? `rgba(16, 185, 129, ${alpha})` : `rgba(225, 29, 72, ${alpha})`;
 }
 
 export function toneOf(score) {
@@ -276,10 +276,10 @@ export function diffVerdicts(prev, results, ids, nowMs) {
   return { next, events };
 }
 
-// Favicon heksagon berwarna sesuai putusan gabungan.
+// Favicon batangan emas; pita bawah berwarna sesuai putusan gabungan.
 export function faviconSvg(tone) {
-  const color = { sbull: '#22c55e', bull: '#4ade80', neutral: '#f5c451', bear: '#f87171', sbear: '#ef4444', na: '#f5c451' }[tone] || '#f5c451';
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M32 3 57 17.5v29L32 61 7 46.5v-29z" fill="${color}"/><path d="M15 40 26 30 35 36 49 21" fill="none" stroke="#06080c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const color = { sbull: '#10b981', bull: '#34d399', neutral: '#d4af37', bear: '#fb7185', sbear: '#e11d48', na: '#d4af37' }[tone] || '#d4af37';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#d4af37"/><stop offset="1" stop-color="#8a6a1f"/></linearGradient></defs><path d="M6 46 18 20h28l12 26z" fill="url(#g)"/><path d="M18 20h28l-4 7H22z" fill="#fff6d0" opacity=".55"/><rect x="6" y="50" width="52" height="8" rx="3" fill="${color}"/></svg>`;
 }
 
 export function statusLevel(st, nowMs, staleMs) {

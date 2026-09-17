@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>AI GOLD — BULL OR BEAR · All Time Frame</title>
   <meta name="description" content="AI GOLD: indikator bull/bear XAUUSD realtime 15 timeframe (1m–1M). Machine learning yang diuji walk-forward, 60+ sinyal teknikal & volume, VWAP, SMA, Hull MA, korelasi DXY, yield, news high impact, dan sentimen.">
-  <meta name="theme-color" content="#06080c">
+  <meta name="theme-color" content="#0a0907">
   <meta name="color-scheme" content="dark">
   <meta property="og:type" content="website">
   <meta property="og:title" content="AI GOLD — BULL OR BEAR · All Time Frame">
   <meta property="og:description" content="Indikator XAUUSD realtime 15 timeframe dengan inti AI yang diuji out-of-sample, VWAP, SMA, Hull MA, DXY, dan news high impact.">
   <meta property="og:url" content="https://xyb3rpunq.github.io/ai-gold/">
   <meta name="twitter:card" content="summary">
-  <link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 3 57 17.5v29L32 61 7 46.5v-29z' fill='%23f5c451'/%3E%3Cpath d='M15 40 26 30 35 36 49 21' fill='none' stroke='%2306080c' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fff1b8'/%3E%3Cstop offset='.5' stop-color='%23d4af37'/%3E%3Cstop offset='1' stop-color='%238a6a1f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M6 46 18 20h28l12 26z' fill='url(%23g)'/%3E%3Cpath d='M18 20h28l-4 7H22z' fill='%23fff6d0' opacity='.55'/%3E%3Crect x='6' y='50' width='52' height='8' rx='3' fill='%23d4af37'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fapi.binance.com">
   <link rel="preconnect" href="https://scanner.tradingview.com">
   <link rel="stylesheet" href="css/style.css">
@@ -23,18 +23,22 @@
 <body>
   <a class="skip" href="#ringkasan">Lompat ke putusan</a>
   <div class="bg-glow" aria-hidden="true"></div>
-  <canvas class="bg-net" id="bg-net" aria-hidden="true"></canvas>
+  <canvas class="bg-dust" id="bg-dust" aria-hidden="true"></canvas>
 
   <header class="topbar">
     <div class="topbar-row">
       <a class="brand" href="#ringkasan" aria-label="AI GOLD — ke ringkasan">
         <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
           <defs>
-            <linearGradient id="bm-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe39e"/><stop offset=".55" stop-color="#f5c451"/><stop offset="1" stop-color="#b8860b"/></linearGradient>
+            <linearGradient id="ing-top" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b8892a"/><stop offset=".5" stop-color="#fff3c4"/><stop offset="1" stop-color="#c9982f"/></linearGradient>
+            <linearGradient id="ing-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d57a"/><stop offset=".55" stop-color="#d4af37"/><stop offset="1" stop-color="#8a6a1f"/></linearGradient>
+            <clipPath id="ing-clip"><path d="M18 18h28l8 16 6 16H4l6-16z"/></clipPath>
           </defs>
-          <path d="M32 3 57 17.5v29L32 61 7 46.5v-29z" fill="url(#bm-g)"/>
-          <path class="bm-line" d="M15 41 26 30 35 36 49 21" fill="none" stroke="#06080c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <g fill="#06080c"><circle cx="15" cy="41" r="4"/><circle cx="26" cy="30" r="4"/><circle cx="35" cy="36" r="4"/><circle class="bm-pulse" cx="49" cy="21" r="4.5"/></g>
+          <path d="M18 18h28l8 16H10z" fill="url(#ing-top)"/>
+          <path d="M10 34h44l6 16H4z" fill="url(#ing-front)"/>
+          <path d="M10 34h44" stroke="#8a6a1f" stroke-width="1"/>
+          <text x="32" y="30" text-anchor="middle" font-family="Cinzel, serif" font-weight="700" font-size="10" fill="#7a5a14">AI</text>
+          <g clip-path="url(#ing-clip)"><rect class="ing-shine" x="0" y="10" width="9" height="48" fill="#fffbe6" opacity=".55"/></g>
         </svg>
         <span class="brand-text">
           <span class="wordmark"><span class="ai-text">AI</span> <span class="gold-text">GOLD</span></span>
@@ -43,15 +47,21 @@
       </a>
 
       <nav class="sections-nav" id="sections-nav" aria-label="Bagian halaman">
-        <a href="#ringkasan" class="on">Ringkasan</a>
-        <a href="#chart-ai">Chart &amp; AI</a>
-        <a href="#sinyal">Sinyal</a>
-        <a href="#matriks">Matriks</a>
-        <a href="#konteks">Konteks</a>
+        <a href="#pemula" data-mode="simple" class="on">Kondisi</a>
+        <a href="#ringkasan" data-mode="pro">Ringkasan</a>
+        <a href="#chart-ai">Chart</a>
+        <a href="#sinyal" data-mode="pro">Sinyal</a>
+        <a href="#matriks" data-mode="pro">Matriks</a>
+        <a href="#konteks" data-mode="pro">Konteks</a>
+        <a href="#belajar" data-mode="simple">Belajar</a>
         <a href="#metodologi">Metode</a>
       </nav>
 
       <div class="topbar-right">
+        <div class="seg mode-seg" id="mode-seg" role="radiogroup" aria-label="Tampilan">
+          <button type="button" data-set-mode="simple" role="radio" aria-checked="true" class="on">Pemula</button>
+          <button type="button" data-set-mode="pro" role="radio" aria-checked="false">Pro</button>
+        </div>
         <div class="seg broker-seg" id="broker-seg" role="radiogroup" aria-label="Feed harga broker">
           <button type="button" data-broker="PEPPERSTONE" class="on" role="radio" aria-checked="true"><span class="long">Pepperstone</span><span class="short">PEP</span></button>
           <button type="button" data-broker="OANDA" role="radio" aria-checked="false">OANDA</button>
@@ -73,8 +83,51 @@
   <main>
     <section class="risk-banner" id="risk-banner" hidden role="alert"></section>
 
+    <!-- ================= MODE PEMULA ================= -->
+    <section id="pemula" class="section" data-mode="simple" aria-labelledby="pemula-h">
+      <h2 class="sr-only" id="pemula-h">Kondisi emas sekarang</h2>
+      <article class="card lux-hero">
+        <div class="lux-hero-grid">
+          <div class="lux-price">
+            <span class="eyebrow">Harga emas sekarang · <span id="s-symbol">XAU/USD</span></span>
+            <div class="lux-price-num"><span id="s-price" class="price-num">—</span><span id="s-chg" class="price-chg">—</span></div>
+            <div class="tick-spark" id="s-spark" aria-hidden="true"></div>
+            <p class="lux-sub" id="s-sub">Dolar AS per troy ounce · diperbarui realtime</p>
+          </div>
+          <div class="lux-verdict" aria-live="polite">
+            <span class="eyebrow" id="s-eyebrow">Kondisi untuk intraday</span>
+            <div class="lux-dir dir-wait" id="s-dir">MEMUAT</div>
+            <div class="strength" id="s-strength" aria-label="Kekuatan sinyal"><i></i><i></i><i></i><span>–</span></div>
+            <p class="lux-sentence" id="s-sentence">Data sedang dimuat…</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="style-picker" id="style-picker" role="radiogroup" aria-label="Gaya trading kamu">
+        <button type="button" class="style-btn" data-style="scalp" role="radio" aria-checked="false"><span class="sb-name">Scalping</span><span class="sb-hint">posisi hitungan menit</span><span class="sb-dir" id="sb-scalp">…</span></button>
+        <button type="button" class="style-btn on" data-style="intraday" role="radio" aria-checked="true"><span class="sb-name">Intraday</span><span class="sb-hint">posisi hitungan jam</span><span class="sb-dir" id="sb-intraday">…</span></button>
+        <button type="button" class="style-btn" data-style="swing" role="radio" aria-checked="false"><span class="sb-name">Swing</span><span class="sb-hint">posisi beberapa hari</span><span class="sb-dir" id="sb-swing">…</span></button>
+        <button type="button" class="style-btn" data-style="position" role="radio" aria-checked="false"><span class="sb-name">Jangka Panjang</span><span class="sb-hint">posisi minggu–bulan</span><span class="sb-dir" id="sb-position">…</span></button>
+      </div>
+
+      <div class="grid-simple">
+        <article class="card">
+          <header class="card-head"><h3>Kenapa begitu?</h3><span class="pill">dicek otomatis</span></header>
+          <ul class="checks" id="s-checks"><li class="sk sk-block"></li><li class="sk sk-block"></li><li class="sk sk-block"></li></ul>
+        </article>
+        <article class="card">
+          <header class="card-head"><h3>Level penting</h3><span class="pill" id="s-level-tf">–</span></header>
+          <div class="ladder" id="s-ladder"><div class="sk sk-block"></div><div class="sk sk-block"></div><div class="sk sk-block"></div></div>
+          <p class="lux-note" id="s-levels-note"></p>
+          <h3 class="subhead">Berita besar berikutnya</h3>
+          <ul class="news-simple" id="s-news"><li class="empty">Memuat kalender…</li></ul>
+        </article>
+      </div>
+      <p class="disclaimer"><b>Bukan saran investasi.</b> AI GOLD membaca kondisi pasar dari data, bukan meramal. Selalu pakai stop loss dan jangan gunakan uang yang tidak siap hilang.</p>
+    </section>
+
     <!-- ================= RINGKASAN ================= -->
-    <section id="ringkasan" class="section" aria-labelledby="ringkasan-h">
+    <section id="ringkasan" class="section" data-mode="pro" aria-labelledby="ringkasan-h">
       <h2 class="sr-only" id="ringkasan-h">Ringkasan</h2>
       <div class="hero">
         <article class="card verdict-card">
@@ -149,7 +202,7 @@
             <h3 id="chart-title">Chart</h3>
             <div class="chart-tools">
               <span class="pill countdown-pill" id="bar-countdown" title="Sisa waktu sampai candle ini tutup">–</span>
-              <details class="menu" id="overlay-menu">
+              <details class="menu" id="overlay-menu" data-mode="pro">
                 <summary class="btn-ghost"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg>Overlay</summary>
                 <div class="menu-pop" id="overlays"></div>
               </details>
@@ -160,10 +213,11 @@
             <div class="chart-legend" id="chart-legend"></div>
             <canvas id="chart" role="img" aria-label="Chart candlestick timeframe terpilih"></canvas>
           </div>
-          <div class="detail-strip" id="detail-strip"></div>
+          <div class="detail-strip" id="detail-strip" data-mode="pro"></div>
+          <p class="lux-note chart-help" data-mode="simple">Cara baca: batang hijau = harga naik, merah = turun. Garis <b style="color:#fb923c">oranye</b> = rata-rata 50 candle terakhir (arah tren). Garis putus <b style="color:#fb7185">merah</b>/<b style="color:#34d399">hijau</b> = batas atas/bawah terdekat.</p>
         </article>
 
-        <article class="card brain-card">
+        <article class="card brain-card" data-mode="pro">
           <header class="card-head">
             <h3 id="brain-title"><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg>Otak AI</h3>
             <span class="muted" id="brain-meta"></span>
@@ -172,7 +226,7 @@
         </article>
       </div>
 
-      <div class="grid-anatomy">
+      <div class="grid-anatomy" data-mode="pro">
         <article class="card breakdown-card">
           <header class="card-head"><h3 id="breakdown-title">Anatomi Skor</h3><span class="muted" id="breakdown-meta"></span></header>
           <div class="breakdown">
@@ -189,7 +243,7 @@
     </section>
 
     <!-- ================= SINYAL ================= -->
-    <section id="sinyal" class="section card signals-card" aria-labelledby="signals-title">
+    <section id="sinyal" data-mode="pro" class="section card signals-card" aria-labelledby="signals-title">
       <header class="card-head">
         <h3 id="signals-title">Semua Sinyal</h3>
         <div class="signal-tools">
@@ -203,13 +257,13 @@
     </section>
 
     <!-- ================= MATRIKS ================= -->
-    <section id="matriks" class="section card" aria-labelledby="matriks-h">
+    <section id="matriks" data-mode="pro" class="section card" aria-labelledby="matriks-h">
       <header class="card-head"><h3 id="matriks-h">Matriks Timeframe</h3><span class="muted">skor kategori −100 (bear) … +100 (bull) · level dalam harga broker</span></header>
       <div class="table-scroll"><table class="matrix" id="matrix"></table></div>
     </section>
 
     <!-- ================= KONTEKS ================= -->
-    <section id="konteks" class="section" aria-labelledby="konteks-h">
+    <section id="konteks" data-mode="pro" class="section" aria-labelledby="konteks-h">
       <h2 class="sr-only" id="konteks-h">Konteks pasar</h2>
       <div class="grid-context">
         <article class="card">
@@ -232,6 +286,38 @@
       <article class="card">
         <header class="card-head"><h3><svg class="ico" aria-hidden="true"><use href="#i-news"/></svg>Headline Gold &amp; Dolar</h3><span class="muted" id="headline-meta"></span></header>
         <div id="headlines" class="headlines"></div>
+      </article>
+    </section>
+
+    <!-- ================= BELAJAR (Pemula) ================= -->
+    <section id="belajar" class="section" data-mode="simple" aria-labelledby="belajar-h">
+      <h2 class="sr-only" id="belajar-h">Belajar</h2>
+      <div class="grid-simple">
+        <article class="card">
+          <header class="card-head"><h3>Aturan aman untuk pemula</h3></header>
+          <ol class="rules">
+            <li><div>Risiko kecil per transaksi<small>Banyak trader membatasi kerugian 1–2% modal per posisi, supaya beberapa kali salah tidak menghabiskan akun.</small></div></li>
+            <li><div>Selalu pasang stop loss<small>Tentukan titik keluar sebelum masuk. Level support/resistance di atas bisa jadi acuan.</small></div></li>
+            <li><div>Hindari masuk saat berita besar<small>Menjelang CPI, NFP, atau keputusan The Fed, harga bisa melompat dan spread melebar.</small></div></li>
+            <li><div>Ikuti arah timeframe yang lebih besar<small>Sinyal 5 menit yang melawan arah 4 jam lebih sering gagal.</small></div></li>
+            <li><div>"Belum jelas" juga sebuah jawaban<small>Tidak masuk posisi saat sinyal bertentangan adalah keputusan yang sah.</small></div></li>
+          </ol>
+        </article>
+        <article class="card">
+          <header class="card-head"><h3>Kamus singkat</h3></header>
+          <div class="glossary">
+            <details><summary>Bull &amp; Bear</summary><p><b>Bull</b> = kondisi harga cenderung naik. <b>Bear</b> = cenderung turun. "Strong" berarti sinyalnya kompak dari banyak indikator.</p></details>
+            <details><summary>Timeframe</summary><p>Ukuran satu batang candle. Timeframe 5m = tiap batang 5 menit, 1H = 1 jam, 1D = 1 hari. Makin besar timeframe, makin lambat tapi biasanya makin bisa diandalkan.</p></details>
+            <details><summary>Support &amp; Resistance</summary><p><b>Support</b> = area di bawah harga yang sering menahan penurunan. <b>Resistance</b> = area di atas yang sering menahan kenaikan. Kalau tembus, pergerakan sering berlanjut.</p></details>
+            <details><summary>Bid, Ask &amp; Spread</summary><p><b>Bid</b> = harga saat kamu menjual, <b>Ask</b> = harga saat membeli. <b>Spread</b> = selisih keduanya, biaya tersembunyi setiap transaksi.</p></details>
+            <details><summary>Peluang naik versi AI</summary><p>Persentase perkiraan harga lebih tinggi beberapa candle ke depan, dihitung model yang belajar dari data lama lalu diuji dengan data yang belum pernah dilihatnya. 50% = tidak tahu. Keandalannya selalu ditampilkan.</p></details>
+            <details><summary>Dolar AS &amp; emas</summary><p>Emas dihargai dalam dolar. Saat dolar menguat, emas biasanya tertekan; saat dolar melemah, emas biasanya terbantu. Tidak selalu, tapi sering.</p></details>
+          </div>
+        </article>
+      </div>
+      <article class="card pro-cta">
+        <p>Sudah paham dasarnya? <b>Mode Pro</b> membuka 60+ indikator, otak AI lengkap, matriks semua timeframe, korelasi DXY, dan sentimen pasar.</p>
+        <button type="button" class="btn-gold" data-set-mode="pro">Buka Mode Pro →</button>
       </article>
     </section>
 
@@ -287,7 +373,7 @@
   </main>
 
   <footer class="footer">
-    <span><b class="gold-text">AI GOLD</b> · BULL OR BEAR · All Time Frame</span>
+    <span><b class="foil">AI GOLD</b> · BULL OR BEAR · All Time Frame</span>
     <span id="footer-perf"></span>
     <a href="https://github.com/xyb3rpunq/ai-gold" target="_blank" rel="noopener">Kode sumber ↗</a>
   </footer>
