@@ -1,0 +1,16 @@
+{
+  "name": "ai-gold",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bias bull/bear XAUUSD realtime di 15 timeframe, berkorelasi DXY, yield, dan news high impact.",
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
+    "smoke": "node scripts/smoke.mjs",
+    "validate": "node scripts/validate-tv.mjs",
+    "serve": "python -m http.server 8787"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

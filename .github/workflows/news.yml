@@ -1,0 +1,34 @@
+name: Perbarui kalender & headline
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: news
+  cancel-in-progress: false
+
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Ambil kalender ForexFactory & headline TradingView
+        run: node scripts/build-news.mjs out
+      # Branch `data` berisi satu commit yang ditimpa tiap run, supaya riwayat main tetap bersih.
+      - name: Terbitkan ke branch data
+        run: |
+          cd out
+          git init -q -b data
+          git config user.name "ai-gold-bot"
+          git config user.email "ai-gold-bot@users.noreply.github.com"
+          git add news.json
+          git commit -q -m "news $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" data
