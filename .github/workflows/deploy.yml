@@ -30,10 +30,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Rakit situs statis
+      # CDN Pages menyimpan cache JS ±10 menit. Seluruh modul ditaruh di folder per commit supaya
+      # worker, engine, dan UI selalu berasal dari versi yang sama (tidak pernah campur lama-baru).
+      - name: Rakit situs statis berversi
         run: |
-          mkdir -p _site
-          cp -r index.html css js _site/
+          V="${GITHUB_SHA::8}"
+          mkdir -p "_site/js/$V" "_site/css/$V"
+          cp index.html _site/
+          cp js/*.js "_site/js/$V/"
+          cp css/*.css "_site/css/$V/"
+          sed -i "s#src=\"js/app.js\"#src=\"js/$V/app.js\"#; s#href=\"css/style.css\"#href=\"css/$V/style.css\"#" _site/index.html
+          grep -q "js/$V/app.js" _site/index.html
+          grep -q "css/$V/style.css" _site/index.html
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
