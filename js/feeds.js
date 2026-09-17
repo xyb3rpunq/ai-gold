@@ -29,12 +29,26 @@ export const COT_URL = 'https://publicreporting.cftc.gov/resource/72hh-3qpy.json
   + '&$order=report_date_as_yyyy_mm_dd%20DESC&$limit=156'
   + '&$select=report_date_as_yyyy_mm_dd,m_money_positions_long_all,m_money_positions_short_all,open_interest_all';
 
-// Harga referensi broker dari scanner: mid bid/ask bila ada, kalau tidak close.
-export function brokerRef(quote) {
-  if (!quote) return NaN;
-  const { bid, ask, close } = quote;
-  if (Number.isFinite(bid) && Number.isFinite(ask) && ask >= bid) return (bid + ask) / 2;
-  return Number.isFinite(close) ? close : NaN;
+// Kolom bid/ask dan close scanner tidak sama segarnya — kadang bid/ask membeku berjam-jam,
+// kadang close yang tertinggal. Lacak kapan tiap kandidat terakhir berubah dan pakai yang terbaru.
+// Seri (belum ada yang berubah) → close.
+export function freshestRef(quote, track = {}, nowMs = Date.now()) {
+  const mid = Number.isFinite(quote?.bid) && Number.isFinite(quote?.ask) && quote.ask >= quote.bid ? (quote.bid + quote.ask) / 2 : NaN;
+  const close = Number.isFinite(quote?.close) ? quote.close : NaN;
+  const next = {};
+  for (const [key, value] of [['close', close], ['mid', mid]]) {
+    const prev = track[key];
+    if (!Number.isFinite(value)) continue;
+    next[key] = !prev || prev.v !== value ? { v: value, t: prev ? nowMs : 0 } : prev;
+  }
+  const c = next.close;
+  const m = next.mid;
+  let field = null;
+  if (c && m) field = m.t > c.t ? 'mid' : 'close';
+  else if (c) field = 'close';
+  else if (m) field = 'mid';
+  const spread = Number.isFinite(mid) && quote.ask - quote.bid < 2 ? quote.ask - quote.bid : NaN;
+  return { ref: field ? next[field].v : NaN, field, track: next, spread };
 }
 
 export function klineUrl(feed, interval, limit) {

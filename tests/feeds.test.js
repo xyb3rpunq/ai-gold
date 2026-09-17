@@ -45,11 +45,24 @@ test('ratingColumns, scannerRequest, parseScanner', () => {
   assert.equal(F.parseScanner(null).gold, null);
 });
 
-test('brokerRef: mid bid/ask, jatuh ke close', () => {
-  assert.equal(F.brokerRef({ bid: 10, ask: 12, close: 5 }), 11);
-  assert.equal(F.brokerRef({ bid: 12, ask: 10, close: 5 }), 5);
-  assert.ok(Number.isNaN(F.brokerRef(null)));
-  assert.ok(Number.isNaN(F.brokerRef({})));
+test('freshestRef: memilih kolom scanner yang terakhir berubah (bid/ask bisa membeku)', () => {
+  // Poll pertama: belum ada riwayat → close.
+  let r = F.freshestRef({ close: 4316.7, bid: 4306.44, ask: 4306.57 }, undefined, 1000);
+  assert.equal(r.field, 'close');
+  assert.equal(r.ref, 4316.7);
+  assert.ok(Math.abs(r.spread - 0.13) < 1e-9);
+  // close bergerak, bid/ask membeku → tetap close.
+  r = F.freshestRef({ close: 4317.2, bid: 4306.44, ask: 4306.57 }, r.track, 2000);
+  assert.equal(r.field, 'close');
+  // Sekarang close membeku dan bid/ask bergerak → mid.
+  r = F.freshestRef({ close: 4317.2, bid: 4318.0, ask: 4318.2 }, r.track, 3000);
+  assert.equal(r.field, 'mid');
+  assert.ok(Math.abs(r.ref - 4318.1) < 1e-9);
+  // Hanya salah satu kolom tersedia.
+  assert.equal(F.freshestRef({ bid: 10, ask: 12 }).field, 'mid');
+  assert.equal(F.freshestRef({ bid: 12, ask: 10, close: 5 }).ref, 5);
+  assert.ok(Number.isNaN(F.freshestRef(null).ref));
+  assert.ok(Number.isNaN(F.freshestRef({ bid: 1, ask: 9, close: 5 }).spread), 'spread tak wajar tidak dipakai');
 });
 
 test('parseCot, parseKlines, parseStreamMessage', () => {

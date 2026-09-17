@@ -190,7 +190,7 @@ function renderPrice(snap) {
   if (snap.source === 'tv' && q) {
     $('price-sub').innerHTML = `High ${U.fmt(q.high_price)} · Low ${U.fmt(q.low_price)} · Open ${U.fmt(q.open_price)} · feed TradingView ${snap.status.tv_quote?.latency != null ? `(${snap.status.tv_quote.latency} ms)` : ''}`;
   } else if (bq) {
-    $('price-sub').innerHTML = `Scanner ${U.esc(snap.broker)}: bid ${U.fmt(bq.bid)} / ask ${U.fmt(bq.ask)} · Binance ${U.fmt(snap.market.perp)} · basis ${U.fmtSigned(snap.market.basis?.perp, 2)}`;
+    $('price-sub').innerHTML = `Jangkar ${U.esc(snap.broker)} (scanner, kolom ${bq.field === 'mid' ? 'bid/ask' : 'close'}): ${U.fmt(bq.ref)} · bid/ask &amp; spread = estimasi · basis ${U.fmtSigned(snap.market.basis?.perp, 2)}`;
   }
   const sc = snap.market.scanner;
   const quotes = snap.market.quotes || {};

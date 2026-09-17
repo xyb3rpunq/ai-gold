@@ -134,7 +134,10 @@ export class DataHub {
   // Mode web publik: jangkarkan harga Binance ke bid/ask broker dari scanner, dan ukur selisihnya.
   anchorToBroker(sc) {
     if (this.source === 'tv') return;
-    const ref = F.brokerRef(sc.brokers?.[this.broker]);
+    const quote = sc.brokers?.[this.broker];
+    const fresh = F.freshestRef(quote, this.quoteTrack?.[this.broker], this.now());
+    this.quoteTrack = { ...(this.quoteTrack || {}), [this.broker]: fresh.track };
+    const ref = fresh.ref;
     if (!Number.isFinite(ref)) return;
     const feed = this.primaryFeed();
     const prevBasis = this.market.basis[feed];
@@ -143,12 +146,11 @@ export class DataHub {
       const prev = this.market.accuracy;
       this.market.accuracy = { last: err, mae: prev ? 0.9 * prev.mae + 0.1 * err : err, n: (prev?.n || 0) + 1 };
     }
-    const quote = sc.brokers[this.broker];
     this.market.basis = {
       perp: updateBasis(this.market.basis.perp, this.lastPrice.perp, ref),
       paxg: updateBasis(this.market.basis.paxg, this.lastPrice.paxg, ref),
     };
-    this.market.brokerQuote = { bid: quote.bid, ask: quote.ask, close: quote.close, ref, at: this.now() };
+    this.market.brokerQuote = { bid: quote.bid, ask: quote.ask, close: quote.close, ref, field: fresh.field, spread: fresh.spread, at: this.now() };
   }
 
   // ---------- Binance ----------
@@ -216,7 +218,7 @@ export class DataHub {
         this.lastTickEmit = nowMs;
         const basis = this.market.basis.perp;
         const bq = this.market.brokerQuote;
-        const half = bq && Number.isFinite(bq.ask - bq.bid) ? (bq.ask - bq.bid) / 2 : NaN;
+        const half = bq && Number.isFinite(bq.spread) ? bq.spread / 2 : NaN;
         const price = Number.isFinite(basis) ? k.price - basis : NaN;
         this.emit({ type: 'tick', price, bid: price - half, ask: price + half, at: nowMs, source: 'binance' });
       }
@@ -234,7 +236,7 @@ export class DataHub {
         this.lastTickEmit = nowMs;
         const basis = this.market.basis.paxg;
         const bq = this.market.brokerQuote;
-        const half = bq && Number.isFinite(bq.ask - bq.bid) ? (bq.ask - bq.bid) / 2 : NaN;
+        const half = bq && Number.isFinite(bq.spread) ? bq.spread / 2 : NaN;
         const price = Number.isFinite(basis) ? k.c - basis : NaN;
         this.emit({ type: 'tick', price, bid: price - half, ask: price + half, at: nowMs, source: 'paxg' });
       }
