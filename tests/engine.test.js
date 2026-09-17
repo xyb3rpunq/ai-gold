@@ -121,6 +121,7 @@ test('computeAll (mode broker): semua timeframe terisi, AI dilatih, anti-DXY pos
   const chart = E.chartPayload(out.results['15m'], 50);
   assert.equal(chart.bars.length, 50);
   assert.equal(chart.lines.hma9.length, 50);
+  assert.ok(chart.bars.every((b) => Number.isFinite(b.v)));
   assert.ok(chart.profile && Number.isFinite(chart.profile.poc));
   assert.equal(E.chartPayload(out.results['1m']), null);
 });

@@ -1,8 +1,11 @@
 name: Perbarui kalender & headline
 
 on:
+  # Menit :00 adalah jam tersibuk GitHub Actions; jadwal di sana sering tertunda atau dilewati.
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '7,22,37,52 * * * *'
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

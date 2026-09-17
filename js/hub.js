@@ -306,6 +306,18 @@ export class DataHub {
     }
   }
 
+  // Rentang harga hari ini dalam harga broker: quote TradingView, atau bar harian Binance dikoreksi basis.
+  dayRange() {
+    const q = this.market.quotes[BROKERS[this.broker]];
+    if (this.source === 'tv' && Number.isFinite(q?.high_price) && Number.isFinite(q?.low_price)) {
+      return { lo: q.low_price, hi: q.high_price };
+    }
+    const bar = this.store.paxg['1d']?.at(-1);
+    const basis = this.market.basis.paxg;
+    if (bar && Number.isFinite(basis)) return { lo: bar.l - basis, hi: bar.h - basis };
+    return null;
+  }
+
   snapshot() {
     const nowMs = this.now();
     this.source = chooseSource(this.store, this.loaded);
@@ -341,6 +353,7 @@ export class DataHub {
         basis: this.market.basis,
         perp: this.lastPrice.perp,
         accuracy: this.market.accuracy,
+        dayRange: this.dayRange(),
         brokerQuote: this.market.brokerQuote || null,
       },
       tvMode: this.tvMode,

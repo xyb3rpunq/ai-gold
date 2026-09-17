@@ -202,7 +202,7 @@ export function chartPayload(result, n = 140) {
   return {
     bars: s.t.slice(from).map((t, k) => {
       const i = from + k;
-      return { t, o: s.o[i] - basis, h: s.h[i] - basis, l: s.l[i] - basis, c: s.c[i] - basis };
+      return { t, o: s.o[i] - basis, h: s.h[i] - basis, l: s.l[i] - basis, c: s.c[i] - basis, v: s.v[i] };
     }),
     lines: {
       hma9: cut(ind.hma9),

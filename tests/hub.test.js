@@ -201,3 +201,14 @@ test('DataHub: cadangan PAXG intraday saat perp dibatasi', async (t) => {
     globalThis.WebSocket = origWs;
   }
 });
+
+test('DataHub.dayRange: quote TradingView atau bar harian dikoreksi basis', () => {
+  const hub = new DataHub(() => {}, { hostname: 'example.com' });
+  assert.equal(hub.dayRange(), null);
+  hub.store.paxg['1d'] = [{ t: 0, o: 1, h: 4320, l: 4250, c: 4300 }];
+  hub.market.basis.paxg = 5;
+  assert.deepEqual(hub.dayRange(), { lo: 4245, hi: 4315 });
+  hub.source = 'tv';
+  hub.market.quotes['PEPPERSTONE:XAUUSD'] = { high_price: 4318, low_price: 4257 };
+  assert.deepEqual(hub.dayRange(), { lo: 4257, hi: 4318 });
+});

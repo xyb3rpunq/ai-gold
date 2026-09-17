@@ -2,202 +2,309 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>AI GOLD — BULL OR BEAR · All Time Frame</title>
-  <meta name="description" content="AI GOLD: indikator bull/bear XAUUSD realtime 15 timeframe (1m–1M). Machine learning (logistic regression + k-NN) yang diuji walk-forward, 60+ sinyal teknikal & volume, VWAP, SMA, Hull MA, korelasi DXY, yield, news high impact, sentimen.">
-  <meta name="theme-color" content="#07090d">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23ffe29a'/><stop offset='1' stop-color='%23c8961e'/></linearGradient></defs><path d='M32 4 56 18v28L32 60 8 46V18z' fill='url(%23g)'/><g stroke='%2307090d' stroke-width='3' fill='%2307090d'><path d='M20 24 32 34 44 24M32 34v14' fill='none'/><circle cx='20' cy='24' r='4'/><circle cx='44' cy='24' r='4'/><circle cx='32' cy='34' r='4'/><circle cx='32' cy='48' r='4'/></g></svg>">
+  <meta name="description" content="AI GOLD: indikator bull/bear XAUUSD realtime 15 timeframe (1m–1M). Machine learning yang diuji walk-forward, 60+ sinyal teknikal & volume, VWAP, SMA, Hull MA, korelasi DXY, yield, news high impact, dan sentimen.">
+  <meta name="theme-color" content="#06080c">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AI GOLD — BULL OR BEAR · All Time Frame">
+  <meta property="og:description" content="Indikator XAUUSD realtime 15 timeframe dengan inti AI yang diuji out-of-sample, VWAP, SMA, Hull MA, DXY, dan news high impact.">
+  <meta property="og:url" content="https://xyb3rpunq.github.io/ai-gold/">
+  <meta name="twitter:card" content="summary">
+  <link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 3 57 17.5v29L32 61 7 46.5v-29z' fill='%23f5c451'/%3E%3Cpath d='M15 40 26 30 35 36 49 21' fill='none' stroke='%2306080c' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fapi.binance.com">
   <link rel="preconnect" href="https://scanner.tradingview.com">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <a class="skip" href="#ringkasan">Lompat ke putusan</a>
   <div class="bg-glow" aria-hidden="true"></div>
   <canvas class="bg-net" id="bg-net" aria-hidden="true"></canvas>
 
   <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-      <div>
-        <h1><span class="ai-text">AI</span> <span class="gold-text">GOLD</span><small class="aindicator">AIndicator</small></h1>
-        <p class="tagline"><b class="t-bull">BULL</b> <i>OR</i> <b class="t-bear">BEAR</b> · <span>ALL TIME FRAME</span></p>
+    <div class="topbar-row">
+      <a class="brand" href="#ringkasan" aria-label="AI GOLD — ke ringkasan">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="bm-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe39e"/><stop offset=".55" stop-color="#f5c451"/><stop offset="1" stop-color="#b8860b"/></linearGradient>
+          </defs>
+          <path d="M32 3 57 17.5v29L32 61 7 46.5v-29z" fill="url(#bm-g)"/>
+          <path class="bm-line" d="M15 41 26 30 35 36 49 21" fill="none" stroke="#06080c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <g fill="#06080c"><circle cx="15" cy="41" r="4"/><circle cx="26" cy="30" r="4"/><circle cx="35" cy="36" r="4"/><circle class="bm-pulse" cx="49" cy="21" r="4.5"/></g>
+        </svg>
+        <span class="brand-text">
+          <span class="wordmark"><span class="ai-text">AI</span> <span class="gold-text">GOLD</span></span>
+          <span class="tagline"><b class="t-bull">BULL</b> <i>or</i> <b class="t-bear">BEAR</b> · all time frame</span>
+        </span>
+      </a>
+
+      <nav class="sections-nav" id="sections-nav" aria-label="Bagian halaman">
+        <a href="#ringkasan" class="on">Ringkasan</a>
+        <a href="#chart-ai">Chart &amp; AI</a>
+        <a href="#sinyal">Sinyal</a>
+        <a href="#matriks">Matriks</a>
+        <a href="#konteks">Konteks</a>
+        <a href="#metodologi">Metode</a>
+      </nav>
+
+      <div class="topbar-right">
+        <div class="seg broker-seg" id="broker-seg" role="radiogroup" aria-label="Feed harga broker">
+          <button type="button" data-broker="PEPPERSTONE" class="on" role="radio" aria-checked="true"><span class="long">Pepperstone</span><span class="short">PEP</span></button>
+          <button type="button" data-broker="OANDA" role="radio" aria-checked="false">OANDA</button>
+        </div>
+        <div class="clock" aria-label="Jam WIB"><span id="clock-wib">--:--:--</span><small>WIB</small></div>
+        <button type="button" class="feeds-btn" id="feeds-btn" aria-expanded="false" aria-controls="feeds-panel">
+          <span class="dot" id="feeds-dot"></span><span id="feeds-summary">Menyambung…</span>
+        </button>
       </div>
     </div>
-    <div class="topbar-right">
-      <div class="seg broker-seg" id="broker-seg" role="radiogroup" aria-label="Feed harga broker">
-        <button data-broker="PEPPERSTONE" class="on" role="radio" aria-checked="true">Pepperstone</button>
-        <button data-broker="OANDA" role="radio" aria-checked="false">OANDA</button>
-      </div>
-      <div class="sessions" id="sessions"></div>
-      <div class="clock"><span id="clock-wib">--:--:--</span><small>WIB</small></div>
-      <button class="feeds-btn" id="feeds-btn" aria-expanded="false" aria-controls="feeds-panel">
-        <span class="dot" id="feeds-dot"></span><span id="feeds-summary">Menyambung…</span>
-      </button>
+    <div class="feeds-panel" id="feeds-panel" hidden>
+      <div class="feeds-head"><b>Status feed</b><span class="muted" id="feeds-mode"></span></div>
+      <div id="feeds-list"></div>
     </div>
-    <div class="feeds-panel" id="feeds-panel" hidden></div>
   </header>
 
+  <div class="sr-only" aria-live="polite" id="live-announcer"></div>
+
   <main>
-    <section class="mode-strip" id="mode-strip" hidden></section>
-    <section class="risk-banner" id="risk-banner" hidden></section>
+    <section class="risk-banner" id="risk-banner" hidden role="alert"></section>
 
-    <section class="hero">
-      <article class="card price-card">
-        <div class="card-head"><h2 id="price-symbol">XAU/USD</h2><span class="live-pill"><span class="pulse"></span>LIVE</span></div>
-        <div class="price-main"><span id="price-last" class="price-num">—</span><span id="price-chg" class="price-chg">—</span></div>
-        <div class="bidask">
-          <div><span>BID</span><b id="price-bid">–</b></div>
-          <div><span>ASK</span><b id="price-ask">–</b></div>
-          <div><span>SPREAD</span><b id="price-spread">–</b></div>
-        </div>
-        <div class="price-sub" id="price-sub">Menunggu feed…</div>
-        <div class="tickers" id="tickers"></div>
-      </article>
-
-      <article class="card verdict-card">
-        <div class="card-head"><h2>Putusan AI GOLD</h2><span class="muted" id="verdict-meta">15 timeframe</span></div>
-        <div class="verdict-body">
-          <div class="gauge-wrap" id="gauge"></div>
-          <div class="ai-ring" id="ai-ring"></div>
-        </div>
-        <div class="verdict">
-          <div id="verdict-label" class="verdict-label tone-na">MEMUAT</div>
-          <div class="verdict-nums">
-            <span>Skor <b id="verdict-score">–</b></span>
-            <span>Keyakinan <b id="verdict-conf">–</b></span>
+    <!-- ================= RINGKASAN ================= -->
+    <section id="ringkasan" class="section" aria-labelledby="ringkasan-h">
+      <h2 class="sr-only" id="ringkasan-h">Ringkasan</h2>
+      <div class="hero">
+        <article class="card verdict-card">
+          <header class="card-head">
+            <h3><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg>Putusan AI GOLD</h3>
+            <span class="pill" id="verdict-meta">15 timeframe</span>
+          </header>
+          <div class="verdict-grid">
+            <div class="verdict-main">
+              <div class="gauge-wrap" id="gauge"><div class="sk sk-gauge"></div></div>
+              <div id="verdict-label" class="verdict-label tone-na">MEMUAT</div>
+              <div class="verdict-nums">
+                <div><span>Skor</span><b id="verdict-score">–</b></div>
+                <div><span>Keyakinan</span><b id="verdict-conf">–</b></div>
+              </div>
+            </div>
+            <div class="verdict-side">
+              <div class="ai-ring" id="ai-ring"><div class="sk sk-ring"></div></div>
+              <div class="consensus" id="consensus">
+                <div class="consensus-bar"><i class="c-bull"></i><i class="c-neutral"></i><i class="c-bear"></i></div>
+                <div class="consensus-legend" id="tf-count"><span class="sk sk-line"></span></div>
+              </div>
+            </div>
           </div>
-          <div class="tf-count" id="tf-count"></div>
-        </div>
-      </article>
+          <div class="horizons" id="horizons">
+            <div class="sk sk-block"></div><div class="sk sk-block"></div><div class="sk sk-block"></div><div class="sk sk-block"></div>
+          </div>
+        </article>
 
-      <article class="card horizon-card">
-        <div class="card-head"><h2>Per Horizon</h2><span class="muted">gaya trading</span></div>
-        <div id="horizons" class="horizons"></div>
-      </article>
-    </section>
-
-    <section class="card heat-card">
-      <div class="card-head">
-        <h2>Semua Timeframe</h2>
-        <span class="muted">klik untuk detail · warna = skor akhir · angka kecil = probabilitas naik versi AI</span>
+        <article class="card price-card">
+          <header class="card-head">
+            <h3 id="price-symbol">XAU/USD</h3>
+            <span class="live-pill"><span class="pulse"></span>LIVE</span>
+          </header>
+          <div class="price-main">
+            <span id="price-last" class="price-num">—</span>
+            <span id="price-chg" class="price-chg">—</span>
+          </div>
+          <div class="tick-spark" id="tick-spark" aria-hidden="true"></div>
+          <div class="bidask">
+            <div><span>Bid</span><b id="price-bid">–</b></div>
+            <div><span>Ask</span><b id="price-ask">–</b></div>
+            <div><span>Spread</span><b id="price-spread">–</b></div>
+          </div>
+          <div class="day-range" id="day-range">
+            <div class="dr-labels"><span>Low <b id="dr-low">–</b></span><span>Rentang hari ini</span><span>High <b id="dr-high">–</b></span></div>
+            <div class="dr-bar"><i id="dr-marker"></i></div>
+          </div>
+          <div class="tickers" id="tickers">
+            <div class="sk sk-block"></div><div class="sk sk-block"></div><div class="sk sk-block"></div>
+            <div class="sk sk-block"></div><div class="sk sk-block"></div><div class="sk sk-block"></div>
+          </div>
+          <p class="mode-note" id="mode-strip">Memuat feed…</p>
+        </article>
       </div>
-      <div class="heatmap" id="heatmap" role="tablist" aria-label="Pilih timeframe"></div>
-    </section>
 
-    <section class="detail-grid">
-      <article class="card chart-card">
-        <div class="card-head">
-          <h2 id="chart-title">Chart</h2>
-          <div class="overlays" id="overlays"></div>
-        </div>
-        <div class="chart-box"><canvas id="chart" aria-label="Chart candlestick timeframe terpilih"></canvas><div class="chart-tip" id="chart-tip" hidden></div></div>
-        <div class="detail-strip" id="detail-strip"></div>
-      </article>
-
-      <article class="card brain-card">
-        <div class="card-head"><h2 id="brain-title">Otak AI</h2><span class="muted" id="brain-meta"></span></div>
-        <div id="brain" class="brain"><div class="empty skeleton">AI sedang belajar dari riwayat candle…</div></div>
+      <article class="card tf-card">
+        <header class="card-head">
+          <h3><svg class="ico" aria-hidden="true"><use href="#i-grid"/></svg>Semua Timeframe</h3>
+          <span class="muted hide-sm">pilih untuk detail · warna = skor akhir · bar bawah = peluang naik versi AI</span>
+        </header>
+        <div class="tf-strip" id="heatmap" role="tablist" aria-label="Pilih timeframe"></div>
       </article>
     </section>
 
-    <section class="detail-grid alt">
-      <article class="card breakdown-card">
-        <div class="card-head"><h2 id="breakdown-title">Anatomi Skor</h2><span class="muted" id="breakdown-meta"></span></div>
-        <div class="breakdown">
-          <div id="radar" class="radar-box"></div>
-          <div id="components" class="components"></div>
-        </div>
-        <div id="reasons" class="reasons"></div>
-      </article>
-      <article class="card">
-        <div class="card-head"><h2>AI di Semua Timeframe</h2><span class="muted">diuji walk-forward, out-of-sample</span></div>
-        <div class="table-scroll"><table class="ai-table" id="ai-table"></table></div>
-      </article>
-    </section>
+    <!-- ================= CHART & AI ================= -->
+    <section id="chart-ai" class="section" aria-labelledby="chart-ai-h">
+      <h2 class="sr-only" id="chart-ai-h">Chart dan AI</h2>
+      <div class="grid-chart">
+        <article class="card chart-card">
+          <header class="card-head chart-head">
+            <h3 id="chart-title">Chart</h3>
+            <div class="chart-tools">
+              <span class="pill countdown-pill" id="bar-countdown" title="Sisa waktu sampai candle ini tutup">–</span>
+              <details class="menu" id="overlay-menu">
+                <summary class="btn-ghost"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg>Overlay</summary>
+                <div class="menu-pop" id="overlays"></div>
+              </details>
+            </div>
+          </header>
+          <div class="tf-tabs" id="tf-tabs" role="tablist" aria-label="Timeframe chart"></div>
+          <div class="chart-box">
+            <div class="chart-legend" id="chart-legend"></div>
+            <canvas id="chart" role="img" aria-label="Chart candlestick timeframe terpilih"></canvas>
+          </div>
+          <div class="detail-strip" id="detail-strip"></div>
+        </article>
 
-    <section class="card signals-card">
-      <div class="card-head">
-        <h2 id="signals-title">Semua Sinyal</h2>
-        <div class="seg" id="signal-filter" role="tablist">
-          <button data-f="all" class="on">Semua</button><button data-f="bull">Bull</button><button data-f="bear">Bear</button>
-        </div>
+        <article class="card brain-card">
+          <header class="card-head">
+            <h3 id="brain-title"><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg>Otak AI</h3>
+            <span class="muted" id="brain-meta"></span>
+          </header>
+          <div id="brain" class="brain"><div class="sk sk-block tall"></div><div class="sk sk-block"></div><div class="sk sk-block"></div></div>
+        </article>
       </div>
+
+      <div class="grid-anatomy">
+        <article class="card breakdown-card">
+          <header class="card-head"><h3 id="breakdown-title">Anatomi Skor</h3><span class="muted" id="breakdown-meta"></span></header>
+          <div class="breakdown">
+            <div id="radar" class="radar-box"><div class="sk sk-ring"></div></div>
+            <div id="components" class="components"></div>
+          </div>
+          <div id="reasons" class="reasons"></div>
+        </article>
+        <article class="card">
+          <header class="card-head"><h3>AI di Semua Timeframe</h3><span class="muted">diuji walk-forward, out-of-sample</span></header>
+          <div class="table-scroll"><table class="ai-table" id="ai-table"></table></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= SINYAL ================= -->
+    <section id="sinyal" class="section card signals-card" aria-labelledby="signals-title">
+      <header class="card-head">
+        <h3 id="signals-title">Semua Sinyal</h3>
+        <div class="signal-tools">
+          <label class="search"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg><input id="signal-search" type="search" placeholder="Cari indikator…" aria-label="Cari indikator"></label>
+          <div class="seg" id="signal-filter" role="radiogroup" aria-label="Saring sinyal">
+            <button type="button" data-f="all" class="on" role="radio" aria-checked="true">Semua</button><button type="button" data-f="bull" role="radio" aria-checked="false">Bull</button><button type="button" data-f="bear" role="radio" aria-checked="false">Bear</button>
+          </div>
+        </div>
+      </header>
       <div id="signals" class="signals"></div>
     </section>
 
-    <section class="card matrix-card">
-      <div class="card-head"><h2>Matriks Timeframe</h2><span class="muted">skor kategori −100 (bear) … +100 (bull) · level dalam harga broker</span></div>
+    <!-- ================= MATRIKS ================= -->
+    <section id="matriks" class="section card" aria-labelledby="matriks-h">
+      <header class="card-head"><h3 id="matriks-h">Matriks Timeframe</h3><span class="muted">skor kategori −100 (bear) … +100 (bull) · level dalam harga broker</span></header>
       <div class="table-scroll"><table class="matrix" id="matrix"></table></div>
     </section>
 
-    <section class="context-grid">
+    <!-- ================= KONTEKS ================= -->
+    <section id="konteks" class="section" aria-labelledby="konteks-h">
+      <h2 class="sr-only" id="konteks-h">Konteks pasar</h2>
+      <div class="grid-context">
+        <article class="card">
+          <header class="card-head"><h3><svg class="ico" aria-hidden="true"><use href="#i-dollar"/></svg>DXY &amp; Antar-pasar</h3><span class="muted" id="dxy-meta"></span></header>
+          <div id="intermarket"></div>
+        </article>
+        <article class="card">
+          <header class="card-head"><h3><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg>News High Impact</h3><span class="muted" id="news-meta"></span></header>
+          <div id="calendar" class="calendar"></div>
+        </article>
+        <article class="card">
+          <header class="card-head"><h3><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg>Sentimen &amp; Posisi</h3><span class="pill">kontrarian</span></header>
+          <div id="sentiment"></div>
+        </article>
+        <article class="card">
+          <header class="card-head"><h3><svg class="ico" aria-hidden="true"><use href="#i-activity"/></svg>Perubahan Sinyal</h3><span class="muted" id="activity-meta">sejak halaman dibuka</span></header>
+          <ol id="activity" class="activity"><li class="empty">Belum ada perubahan arah. Setiap kali timeframe berpindah bull ↔ netral ↔ bear, tercatat di sini.</li></ol>
+        </article>
+      </div>
       <article class="card">
-        <div class="card-head"><h2>DXY &amp; Antar-pasar</h2><span class="muted" id="dxy-meta"></span></div>
-        <div id="intermarket"></div>
-      </article>
-      <article class="card">
-        <div class="card-head"><h2>News High Impact</h2><span class="muted" id="news-meta"></span></div>
-        <div id="calendar" class="calendar"></div>
-      </article>
-      <article class="card">
-        <div class="card-head"><h2>Sentimen &amp; Posisi</h2><span class="muted">kontrarian</span></div>
-        <div id="sentiment"></div>
+        <header class="card-head"><h3><svg class="ico" aria-hidden="true"><use href="#i-news"/></svg>Headline Gold &amp; Dolar</h3><span class="muted" id="headline-meta"></span></header>
+        <div id="headlines" class="headlines"></div>
       </article>
     </section>
 
-    <section class="card">
-      <div class="card-head"><h2>Headline Gold &amp; Dolar</h2><span class="muted" id="headline-meta"></span></div>
-      <div id="headlines" class="headlines"></div>
-    </section>
-
-    <section class="card method" id="metodologi">
-      <div class="card-head"><h2>Cara Kerja AI GOLD</h2><span class="muted">transparan, bisa diperiksa</span></div>
-      <div class="method-grid">
-        <div>
-          <h3>1 · Inti AI (bobot dasar 25%)</h3>
-          <p>Untuk <b>setiap timeframe</b>, AI dilatih langsung di browser lo dari riwayat candle broker: 40 fitur (trend, momentum, SMA, Hull MA, VWAP, volume, return, anti-DXY, jam sesi) → target "apakah harga lebih tinggi 5 bar ke depan".</p>
-          <ul class="method-list">
-            <li><b>Model A · Logistic regression</b> L2, dilatih Newton-Raphson. Bobotnya = seberapa penting tiap indikator menurut data emas sendiri.</li>
-            <li><b>Model B · k-Nearest Neighbors</b> mencari kondisi historis paling mirip ("analog pasar") dan melihat apa yang terjadi sesudahnya.</li>
-            <li><b>Uji walk-forward:</b> 70% data lama untuk belajar, 30% terbaru untuk ujian yang belum pernah dilihat model (dengan jeda H bar supaya tidak bocor).</li>
-            <li><b>Bobot AI di skor = 25% × reliabilitas.</b> Reliabilitas diukur dari Brier skill score & akurasi out-of-sample. AI yang tidak lebih baik dari tebakan otomatis tidak ikut memilih.</li>
-            <li>Model dilatih ulang tiap ada bar baru yang tutup, di Web Worker.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>2 · Teknikal (45%)</h3>
-          <ul class="method-list">
-            <li><b>Trend 27%</b> EMA 9/21/50/200, SMA 20/50/200 + golden/death cross, Hull MA 9 &amp; 21 + titik balik, Ichimoku, SuperTrend, Parabolic SAR, ADX/DMI, Aroon, regresi linear, Donchian, Heikin Ashi</li>
-            <li><b>Momentum 18%</b> RSI, MACD, Stochastic, Stoch RSI, CCI, Williams %R, Momentum/ROC, Awesome, Ultimate Oscillator</li>
-            <li><b>Volume 17%</b> VWAP ter-anchor + band ±1σ/±2σ, arah VWAP, VWMA, Volume Profile (POC/VAH/VAL), OBV, A/D Line, Chaikin Osc, CMF, Twiggs MF, MFI, PVT, Force Index, Ease of Movement, Klinger, NVI/PVI, Volume Oscillator, Relative Volume, CVD, taker buy ratio</li>
-            <li><b>Struktur 13%</b> Teori Dow, break of structure, pivot klasik, Bollinger %B, Fibonacci</li>
-            <li><b>Pola 10%</b> 18 pola candlestick, divergensi RSI, double top/bottom — hanya bar yang sudah tutup</li>
-            <li><b>Konsensus 15%</b> rating teknikal TradingView</li>
-          </ul>
-        </div>
-        <div>
-          <h3>3 · Konteks (30%) &amp; data</h3>
-          <ul class="method-list">
-            <li><b>DXY 15%</b> kebalikan rating DXY × faktor korelasi terukur emas~dolar per timeframe</li>
-            <li><b>Yield &amp; VIX 7%</b> · <b>News makro 5%</b> kejutan aktual vs forecast, meluruh 4 jam · <b>Sentimen 3%</b> posisi ritel Binance, funding, COT CFTC, nada headline</li>
-            <li>Dalam 30 mnt sebelum–15 mnt sesudah news high impact, keyakinan TF ≤1H dipotong 50%.</li>
-          </ul>
-          <p class="note"><b>Mode lokal (localhost):</b> candle &amp; tick persis PEPPERSTONE:XAUUSD / OANDA:XAUUSD dari TradingView — sama dengan chart TradingView lo. TradingView hanya mengizinkan koneksi ini dari localhost.</p>
-          <p class="note"><b>Mode web publik:</b> tick realtime Binance XAUUSDT dijangkarkan ke bid/ask broker dari scanner TradingView (±5–10 dtk); selisih rata-ratanya ditampilkan. Candle MT5 bisa beda jam buka D1 tergantung zona waktu server broker.</p>
-          <p class="note warn">Bukan saran investasi. AI membaca probabilitas dari masa lalu, bukan kepastian masa depan — akurasi out-of-sample-nya selalu ditampilkan apa adanya.</p>
-        </div>
+    <!-- ================= METODOLOGI ================= -->
+    <section class="section card method" id="metodologi" aria-labelledby="metodologi-h">
+      <header class="card-head"><h3 id="metodologi-h">Cara Kerja AI GOLD</h3><span class="muted">transparan, bisa diperiksa</span></header>
+      <div class="accordion">
+        <details open>
+          <summary><span class="acc-num">1</span>Inti AI <em>bobot dasar 25% × reliabilitas</em></summary>
+          <div class="acc-body">
+            <p>Untuk <b>setiap timeframe</b>, AI dilatih langsung di browser dari riwayat candle broker: 40 fitur (trend, momentum, SMA, Hull MA, VWAP, volume, return, anti-DXY, jam sesi) → target "apakah harga lebih tinggi 5 bar ke depan".</p>
+            <ul class="method-list">
+              <li><b>Model A · Logistic regression</b> L2, dilatih Newton-Raphson. Bobotnya = seberapa penting tiap indikator menurut data emas sendiri.</li>
+              <li><b>Model B · k-Nearest Neighbors</b> mencari kondisi historis paling mirip ("analog pasar") dan melihat apa yang terjadi sesudahnya.</li>
+              <li><b>Uji walk-forward:</b> 70% data lama untuk belajar, 30% terbaru untuk ujian yang belum pernah dilihat model, dengan jeda H bar supaya tidak bocor.</li>
+              <li><b>Reliabilitas</b> dari Brier skill score &amp; akurasi out-of-sample. AI yang tidak lebih baik dari tebakan mayoritas tidak ikut memilih.</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary><span class="acc-num">2</span>Teknikal <em>45%</em></summary>
+          <div class="acc-body">
+            <ul class="method-list">
+              <li><b>Trend 27%</b> EMA 9/21/50/200, SMA 20/50/200 + golden/death cross, Hull MA 9 &amp; 21 + titik balik, Ichimoku, SuperTrend, Parabolic SAR, ADX/DMI, Aroon, regresi linear, Donchian, Heikin Ashi</li>
+              <li><b>Momentum 18%</b> RSI, MACD, Stochastic, Stoch RSI, CCI, Williams %R, Momentum/ROC, Awesome, Ultimate Oscillator</li>
+              <li><b>Volume 17%</b> VWAP ter-anchor + band ±1σ/±2σ, arah VWAP, VWMA, Volume Profile (POC/VAH/VAL), OBV, A/D Line, Chaikin Osc, CMF, Twiggs MF, MFI, PVT, Force Index, Ease of Movement, Klinger, NVI/PVI, Volume Oscillator, Relative Volume, CVD, taker buy ratio</li>
+              <li><b>Struktur 13%</b> Teori Dow, break of structure, pivot klasik, Bollinger %B, Fibonacci</li>
+              <li><b>Pola 10%</b> 18 pola candlestick, divergensi RSI, double top/bottom — hanya bar yang sudah tutup</li>
+              <li><b>Konsensus 15%</b> rating teknikal TradingView</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary><span class="acc-num">3</span>Konteks antar-pasar <em>30%</em></summary>
+          <div class="acc-body">
+            <ul class="method-list">
+              <li><b>DXY 15%</b> kebalikan rating DXY × anti-korelasi emas~dolar yang terukur per timeframe</li>
+              <li><b>Yield &amp; VIX 7%</b> · <b>News makro 5%</b> kejutan aktual vs forecast, meluruh 4 jam · <b>Sentimen 3%</b> posisi ritel Binance, funding, COT CFTC, nada headline</li>
+              <li>Dalam 30 menit sebelum sampai 15 menit sesudah news high impact, keyakinan TF ≤1H dipotong 50%.</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary><span class="acc-num">4</span>Data, mode harga &amp; batasan</summary>
+          <div class="acc-body">
+            <p><b>Mode lokal (localhost):</b> candle &amp; tick persis PEPPERSTONE:XAUUSD / OANDA:XAUUSD dari TradingView — sama dengan chart TradingView lo. TradingView hanya mengizinkan koneksi ini dari localhost.</p>
+            <p><b>Mode web publik:</b> tick realtime Binance XAUUSDT dijangkarkan ke kolom scanner TradingView yang paling segar untuk broker terpilih; selisih rata-ratanya ditampilkan. Candle D1 di MT5 bisa beda jam buka tergantung zona waktu server broker.</p>
+            <p class="note warn">Bukan saran investasi. AI membaca probabilitas dari masa lalu, bukan kepastian masa depan — akurasi out-of-sample-nya selalu ditampilkan apa adanya.</p>
+          </div>
+        </details>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <span><b>AI GOLD</b> · BULL OR BEAR · All Time Frame</span>
+    <span><b class="gold-text">AI GOLD</b> · BULL OR BEAR · All Time Frame</span>
     <span id="footer-perf"></span>
-    <a href="https://github.com/xyb3rpunq/ai-gold" target="_blank" rel="noopener">Kode sumber</a>
+    <a href="https://github.com/xyb3rpunq/ai-gold" target="_blank" rel="noopener">Kode sumber ↗</a>
   </footer>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-brain" viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3v.2A3 3 0 0 0 4 9a3 3 0 0 0 1 2.2A3 3 0 0 0 6 17a3 3 0 0 0 3 3 2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm6 0a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2 3 3 0 0 0 3-3 3 3 0 0 0 1-5.8A3 3 0 0 0 20 9a3 3 0 0 0-2-2.8V6a3 3 0 0 0-3-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 3v18M16.5 7.5c-.8-1.3-2.4-2-4.5-2-2.8 0-4.5 1.4-4.5 3.3 0 4.5 9 2.2 9 6.7 0 2-1.8 3.5-4.5 3.5-2.2 0-4-.8-4.8-2.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M4 6h16v14H4zM4 10h16M9 3v5M15 3v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c1.8.9 3 2.8 3 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-news" viewBox="0 0 24 24"><path d="M5 4h12v16H6a2 2 0 0 1-2-2V8h1M8 8h6M8 12h6M8 16h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
 
   <script type="module" src="js/app.js"></script>
 </body>
